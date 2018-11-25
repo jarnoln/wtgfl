@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My first Vue app</title>
+  <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+  <div id="app">
+    <input type="text" v-on:input="addOption">
+    <p> {{option}} </p>
+  </div>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        option: 'Option1'
+      },
+      methods: {
+        addOption: function(event) {
+          this.option = event.target.value;
+        }
+      }
+    })
+  </script>
+</body>
+</html>
