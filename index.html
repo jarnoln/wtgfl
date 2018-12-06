@@ -8,19 +8,27 @@
 </head>
 <body>
   <div id="app">
-    <input type="text" v-on:input="addOption">
-    <p> {{option}} </p>
+    <input type="text" v-model="current" v-on:keydown.enter="addOption">
+    <!-- <p> {{current}} </p> -->
+    <!-- <p> {{options}} </p> -->
+    <ul>
+      <li v-for="option in options">
+        {{ option }}
+      </li>
+    </ul>
   </div>
 
   <script>
     var app = new Vue({
       el: '#app',
       data: {
-        option: 'Option1'
+        current: '',
+        options: ['Option1', 'Option2']
       },
       methods: {
         addOption: function(event) {
-          this.option = event.target.value;
+          this.options.push(this.current);
+          this.current = '';
         }
       }
     })
