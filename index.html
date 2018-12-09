@@ -3,17 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My first Vue app</title>
+  <title>Where To Go For Lunch</title>
   <script src="https://unpkg.com/vue"></script>
 </head>
 <body>
   <div id="app">
-    <input type="text" v-model="current" v-on:keydown.enter="addOption">
+
+    <h2>My vote</h2>
+
+    <ol>
+        <li v-for="option in ballot">
+          <div v-on:click="removeOption">{{ option }}</div>
+        </li>
+    </ol>
+  
+    <p v-if="ballot.length == 0">No vote yet. Pick from existing options or add a new one: </p>
+    <p v-else>You have {{ ballot.length }} preferences in your vote. You can still add more if you want.</p>
+    <input id="new-option-text" type="text" v-model="current" v-on:keydown.enter="addNewOption">
+    <button v-on:click="addNewOption">Add</button>
+
+    <h2> Options </h2>
     <!-- <p> {{current}} </p> -->
     <!-- <p> {{options}} </p> -->
     <ul>
       <li v-for="option in options">
-        {{ option }}
+        <div v-on:click="addOption">{{ option }}</div>
       </li>
     </ul>
   </div>
@@ -23,12 +37,25 @@
       el: '#app',
       data: {
         current: '',
-        options: ['Option1', 'Option2']
+        ballot: [],
+        options: ['Option1', 'Option2', 'Option3']
       },
       methods: {
+        addNewOption: function(event) {
+          console.log('addOption:' + this.current)
+          this.options.push(this.current)
+          this.ballot.push(this.current)
+          this.current = ''
+        },
         addOption: function(event) {
-          this.options.push(this.current);
-          this.current = '';
+          let option = event.target.innerHTML
+          console.log('addOption:' + option)
+          this.ballot.push(option)
+        },
+        removeOption: function(event) {
+          let option = event.target.innerHTML
+          let index = this.ballot.indexOf(option)
+          this.ballot.splice(index, 1)
         }
       }
     })
