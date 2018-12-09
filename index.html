@@ -43,14 +43,19 @@
       methods: {
         addNewOption: function(event) {
           console.log('addOption:' + this.current)
-          this.options.push(this.current)
-          this.ballot.push(this.current)
-          this.current = ''
+          if (!this.options.includes(this.current)) {
+            let index = this.options.i
+            this.options.push(this.current)
+            this.ballot.push(this.current)
+            this.current = ''
+          }
         },
         addOption: function(event) {
           let option = event.target.innerHTML
           console.log('addOption:' + option)
-          this.ballot.push(option)
+          if (!this.ballot.includes(option)) {
+            this.ballot.push(option)
+          }
         },
         removeOption: function(event) {
           let option = event.target.innerHTML
