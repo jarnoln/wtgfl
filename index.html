@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Where To Go For Lunch</title>
   <script src="https://unpkg.com/vue"></script>
+  <style>
+    .option {
+      padding: 5px;
+      margin: 3px;
+      border: 1px solid black;
+    }
+  </style>
 </head>
 <body>
   <div id="app">
@@ -13,10 +20,10 @@
 
     <ol>
         <li v-for="option in ballot">
-          <div v-on:click="removeOption">{{ option }}</div>
+          <div class="option" v-on:click="removeOption">{{ option }}</div>
         </li>
     </ol>
-  
+
     <p v-if="ballot.length == 0">No vote yet. Pick from existing options or add a new one: </p>
     <p v-else>You have {{ ballot.length }} preferences in your vote. You can still add more if you want.</p>
     <input id="new-option-text" type="text" v-model="current" v-on:keydown.enter="addNewOption">
@@ -27,7 +34,7 @@
     <!-- <p> {{options}} </p> -->
     <ul>
       <li v-for="option in options">
-        <div v-on:click="addOption">{{ option }}</div>
+        <div class="option" v-on:click="addOption">{{ option }}</div>
       </li>
     </ul>
   </div>
@@ -45,7 +52,7 @@
           console.log('addOption:' + this.current)
           if (!this.options.includes(this.current)) {
             let index = this.options.i
-            this.options.push(this.current)
+            // this.options.push(this.current)
             this.ballot.push(this.current)
             this.current = ''
           }
@@ -55,12 +62,16 @@
           console.log('addOption:' + option)
           if (!this.ballot.includes(option)) {
             this.ballot.push(option)
+            // Remove option from available options
+            let index = this.options.indexOf(option)
+            this.options.splice(index, 1)
           }
         },
         removeOption: function(event) {
           let option = event.target.innerHTML
           let index = this.ballot.indexOf(option)
           this.ballot.splice(index, 1)
+          this.options.push(option)
         }
       }
     })
