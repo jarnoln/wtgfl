@@ -1,15 +1,15 @@
-function calculatePluralityWinners(ballots) {
-  // Give one point the first choice of each ballot, ignoring any choices after that.
+function calculateApprovalWinners(ballots) {
+  // Give one point for each item in ballot, ignoring order.
   // The option(s) with most points wins.
-  // https://en.wikipedia.org/wiki/Plurality_voting
-  console.log('calculatePluralityWinners: ' + ballots)
+  // https://en.wikipedia.org/wiki/Approval_voting
+  console.log('calculateApprovalWinners: ' + ballots)
   let winners = []
   let counts = {}
   // Count first votes for each option
   for (let i=0; i<ballots.length; i++) {
     let ballot = ballots[i]
-    if (ballot.length > 0) {
-      key = ballot[0]
+    for (let j=0; j<ballot.length; j++) {
+      key = ballot[j]
       if (Object.keys(counts).includes(key)) {
         counts[key] += 1
       } else {
@@ -35,7 +35,7 @@ function calculatePluralityWinners(ballots) {
 
   console.log('Winners: ' + winners)
   let result = {
-    method: 'plurality',
+    method: 'approval',
     winners: winners,
     counts: counts
   }
