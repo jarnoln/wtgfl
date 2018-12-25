@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Where To Go For Lunch</title>
   <script src="https://unpkg.com/vue"></script>
+  <script src="plurality.js"></script>
   <style>
     .option {
       padding: 5px;
@@ -16,7 +17,7 @@
 <body>
   <div id="app">
 
-    <h2>My vote</h2>
+    <h2>My ballot</h2>
 
     <ol>
         <li v-for="id in ballot">
@@ -34,16 +35,27 @@
     <button v-on:click="addNewOption">Add</button>
 
     <h2> Options </h2>
-    <!-- <p> {{current}} </p> -->
-    <!-- <p> {{options}} </p> -->
     <ul>
       <li v-for="id in available">
         <div class="option" v-on:click="addToBallot" title="Add" :id="id">{{ id }}: {{ options[id].title }}</div>
       </li>
     </ul>
+    <p>
+      <button @click="castBallot">Cast ballot</button>
+    </p>
+    <p>
+      <h2>Cast ballots</h2>
+      <ul>
+        <li v-for="(ballot, index) in ballots">
+          <div>{{ index }}: {{ ballot }}</div>
+        </li>
+      </ul>
+    </p>
     <div> Available: {{ available }} </div>
     <div> Ballot: {{ ballot }} </div>
     <div> Options: {{ options }} </div>
+    <div> Ballots: {{ ballots }} </div>
+    <div> Winners: {{ winners }} </div>
   </div>
 
   <script>
@@ -51,10 +63,11 @@
       el: '#app',
       data: {
         current: '',
-        ballots: [],                 // All cast ballots
-        ballot: [],                  // Options added to ballot in preference order
+        ballots: [],  // All cast ballots
+        ballot: [],  // Options added to ballot in preference order
+        winners: [],  // Current election winners (can be more than one in case of tie)
         available: ['red', 'green', 'blue'],  // Options not yet added to ballot
-        options: {                   // All currently known options
+        options: {  // All currently known options
           'red': { title: 'Red'},
           'green': { title: 'Green'},
           'blue': { title: 'Blue'}
@@ -70,6 +83,9 @@
           let newKey = this.titleToKey(title)
           // console.log('Check if already exists: '+ title)
           return Object.keys(this.options).includes(newKey)
+        },
+        initializeAvailables() {
+          this.available = Object.keys(this.options)
         },
         addNewOption: function(event) {
           let title = this.current
@@ -123,6 +139,13 @@
           if (index < this.ballot.length - 1) {
             this.switchBallotItems(index, index + 1)
           }
+        },
+        castBallot: function(event) {
+          this.ballots.push(this.ballot)
+          this.ballot = []
+          this.initializeAvailables()
+          let result = calculatePluralityWinners(this.ballots)
+          this.winners = result.winners
         }
       }
     })
