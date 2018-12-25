@@ -20,10 +20,10 @@
 
     <ol>
         <li v-for="id in ballot">
-          <div class="option" v-on:click="removeFromBallot">{{ id }}: {{ options[id] }}
+          <div :id="id" class="option">{{ id }}: {{ options[id] }}
             <button v-on:click="">Up</button>
             <button v-on:click="">Down</button>
-            <button v-on:click="">Remove</button>
+            <button v-on:click="removeFromBallot">Remove</button>
           </div>
         </li>
     </ol>
@@ -50,7 +50,7 @@
       el: '#app',
       data: {
         current: '',
-        ballot: [],            // Options added to ballot
+        ballot: [],            // Options added to ballot in preference order
         available: ['a', 'b', 'c'],  // Options not yet added to ballot
         options: {             // All currently known options
           'a': 'Red',
@@ -79,10 +79,10 @@
           }
         },
         removeFromBallot: function(event) {
-          let option = event.target.innerHTML
-          let index = this.ballot.indexOf(option)
+          let id = event.target.parentElement.id
+          let index = this.ballot.indexOf(id)
           this.ballot.splice(index, 1)
-          this.options.push(option)
+          this.available.push(id)
         }
       }
     })
