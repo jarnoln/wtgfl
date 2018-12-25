@@ -20,9 +20,9 @@
 
     <ol>
         <li v-for="id in ballot">
-          <div :id="id" class="option">{{ id }}: {{ options[id] }}
-            <button v-on:click="">Up</button>
-            <button v-on:click="">Down</button>
+          <div :id="id" class="option">{{ id }}: {{ options[id].title }}
+            <button v-on:click="moveUpInBallot">Up</button>
+            <button v-on:click="moveDownInBallot">Down</button>
             <button v-on:click="removeFromBallot">Remove</button>
           </div>
         </li>
@@ -38,7 +38,7 @@
     <!-- <p> {{options}} </p> -->
     <ul>
       <li v-for="id in available">
-        <div class="option" v-on:click="addToBallot" title="Add" :id="id">{{ id }}: {{ options[id] }}</div>
+        <div class="option" v-on:click="addToBallot" title="Add" :id="id">{{ id }}: {{ options[id].title }}</div>
       </li>
     </ul>
     <div> Available: {{ available }} </div>
@@ -50,12 +50,12 @@
       el: '#app',
       data: {
         current: '',
-        ballot: [],            // Options added to ballot in preference order
+        ballot: [],                  // Options added to ballot in preference order
         available: ['a', 'b', 'c'],  // Options not yet added to ballot
-        options: {             // All currently known options
-          'a': 'Red',
-          'b': 'Green',
-          'c': 'Blue'
+        options: {                   // All currently known options
+          'a': { title: 'Red'},
+          'b': { title: 'Green'},
+          'c': { title: 'Blue'}
         }
       },
       methods: {
@@ -83,6 +83,28 @@
           let index = this.ballot.indexOf(id)
           this.ballot.splice(index, 1)
           this.available.push(id)
+        },
+        switchBallotItems: function(index1, index2) {
+          console.log('switchBallotItemns: ' + index1 + ' <> ' + index2)
+          // console.log('ballot: ' + this.ballot)
+          var temp = this.ballot[index1]
+          Vue.set(this.ballot, index1, this.ballot[index2])
+          Vue.set(this.ballot, index2, temp)
+          // console.log('ballot: ' + this.ballot)
+        },
+        moveUpInBallot: function(event) {
+          let id = event.target.parentElement.id
+          let index = this.ballot.indexOf(id)
+          if (index > 0) {
+            this.switchBallotItems(index, index-1)
+          }
+        },
+        moveDownInBallot: function(event) {
+          let id = event.target.parentElement.id
+          let index = this.ballot.indexOf(id)
+          if (index < this.ballot.length - 1) {
+            this.switchBallotItems(index, index+1)
+          }
         }
       }
     })
