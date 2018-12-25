@@ -43,6 +43,7 @@
     </ul>
     <div> Available: {{ available }} </div>
     <div> Ballot: {{ ballot }} </div>
+    <div> Options: {{ options }} </div>
   </div>
 
   <script>
@@ -50,23 +51,40 @@
       el: '#app',
       data: {
         current: '',
+        ballots: [],                 // All cast ballots
         ballot: [],                  // Options added to ballot in preference order
-        available: ['a', 'b', 'c'],  // Options not yet added to ballot
+        available: ['red', 'green', 'blue'],  // Options not yet added to ballot
         options: {                   // All currently known options
-          'a': { title: 'Red'},
-          'b': { title: 'Green'},
-          'c': { title: 'Blue'}
+          'red': { title: 'Red'},
+          'green': { title: 'Green'},
+          'blue': { title: 'Blue'}
         }
       },
       methods: {
+        titleToKey: function(title) {
+          let newKey = title.toLowerCase()
+          newKey = newKey.replace(' ', '_')
+          return newKey
+        },
+        optionExists: function(title) {
+          let newKey = this.titleToKey(title)
+          // console.log('Check if already exists: '+ title)
+          return Object.keys(this.options).includes(newKey)
+        },
         addNewOption: function(event) {
-          console.log('addOption:' + this.current)
-          if (!this.options.includes(this.current)) {
-            let index = this.options.i
-            // this.options.push(this.current)
-            this.ballot.push(this.current)
-            this.current = ''
+          let title = this.current
+          console.log('addOption:' + title)
+          if (this.optionExists(title)) {
+            console.log("Option with this title already exists: " + title)
+            return;
           }
+          let option = {
+            title: title
+          }
+          let newKey = this.titleToKey(title)
+          console.log('Add option ' + newKey + ': ' + title)
+          Vue.set(this.options, newKey, option)
+          this.ballot.push(newKey)
         },
         addToBallot: function(event) {
           let id = event.target.id
@@ -88,7 +106,7 @@
           console.log('switchBallotItemns: ' + index1 + ' <> ' + index2)
           // console.log('ballot: ' + this.ballot)
           var temp = this.ballot[index1]
-          Vue.set(this.ballot, index1, this.ballot[index2])
+          Vue.set(this.ballot, index1, this.ballot[index2])  // Need to use this to notify Vue of the change
           Vue.set(this.ballot, index2, temp)
           // console.log('ballot: ' + this.ballot)
         },
@@ -96,14 +114,14 @@
           let id = event.target.parentElement.id
           let index = this.ballot.indexOf(id)
           if (index > 0) {
-            this.switchBallotItems(index, index-1)
+            this.switchBallotItems(index, index - 1)
           }
         },
         moveDownInBallot: function(event) {
           let id = event.target.parentElement.id
           let index = this.ballot.indexOf(id)
           if (index < this.ballot.length - 1) {
-            this.switchBallotItems(index, index+1)
+            this.switchBallotItems(index, index + 1)
           }
         }
       }
