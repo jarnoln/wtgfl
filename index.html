@@ -19,8 +19,12 @@
     <h2>My vote</h2>
 
     <ol>
-        <li v-for="option in ballot">
-          <div class="option" v-on:click="removeOption">{{ option }}</div>
+        <li v-for="id in ballot">
+          <div class="option" v-on:click="removeFromBallot">{{ id }}: {{ options[id] }}
+            <button v-on:click="">Up</button>
+            <button v-on:click="">Down</button>
+            <button v-on:click="">Remove</button>
+          </div>
         </li>
     </ol>
 
@@ -33,10 +37,12 @@
     <!-- <p> {{current}} </p> -->
     <!-- <p> {{options}} </p> -->
     <ul>
-      <li v-for="option in options">
-        <div class="option" v-on:click="addOption">{{ option }}</div>
+      <li v-for="id in available">
+        <div class="option" v-on:click="addToBallot" title="Add" :id="id">{{ id }}: {{ options[id] }}</div>
       </li>
     </ul>
+    <div> Available: {{ available }} </div>
+    <div> Ballot: {{ ballot }} </div>
   </div>
 
   <script>
@@ -44,8 +50,13 @@
       el: '#app',
       data: {
         current: '',
-        ballot: [],
-        options: ['Option1', 'Option2', 'Option3']
+        ballot: [],            // Options added to ballot
+        available: ['a', 'b', 'c'],  // Options not yet added to ballot
+        options: {             // All currently known options
+          'a': 'Red',
+          'b': 'Green',
+          'c': 'Blue'
+        }
       },
       methods: {
         addNewOption: function(event) {
@@ -57,17 +68,17 @@
             this.current = ''
           }
         },
-        addOption: function(event) {
-          let option = event.target.innerHTML
-          console.log('addOption:' + option)
-          if (!this.ballot.includes(option)) {
-            this.ballot.push(option)
+        addToBallot: function(event) {
+          let id = event.target.id
+          console.log('addOption:' + id)
+          if (!this.ballot.includes(id)) {
+            this.ballot.push(id)
             // Remove option from available options
-            let index = this.options.indexOf(option)
-            this.options.splice(index, 1)
+            let index = this.available.indexOf(id)
+            this.available.splice(index, 1)
           }
         },
-        removeOption: function(event) {
+        removeFromBallot: function(event) {
           let option = event.target.innerHTML
           let index = this.ballot.indexOf(option)
           this.ballot.splice(index, 1)
