@@ -1,0 +1,27 @@
+Todo:
+- Apply some styling
+- Set up backend to allow participating over network
+- Calculate winner(s) by condorcet method
+- Settings:
+  - Can choose voting method
+  - Allow more than one vote from one browser
+  - Allow anyone with link to paticipate or only those invited
+
+Advanced:
+- Repeat voting the next day with the same options
+  - Option to exclude past winners from next election(s)
+  - Option to discount votes from those whose first choice won last time(s)
+  - Keep statistics of popular choices
+- Allow selecting least liked options (in practice adds all other options before them on ballot)
+- Connect to external service and use location to fetch list of nearest restaurants (and possibly lunch menus)
+- User guide video
+
+Done:
+- Add choices to ballot by choosing them from existing options
+- Add choices to ballot by typing them
+    - New options also added to existing option list
+- Remove choices from ballot (and return them to available options)
+- Reorder choices in ballot
+- Cast ballots locally (adding them to a local list of ballots)
+- Calculate winner(s) by giving list of ballots simple plurality method
+- Calculate winner(s) by approval method
