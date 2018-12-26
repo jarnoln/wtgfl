@@ -8,12 +8,34 @@
   <script src="plurality.js"></script>
   <script src="approval.js"></script>
   <style>
-    .option {
-      padding: 5px;
-      margin: 3px;
+    body {
+      font-family: 'Open Sans', sans-serif;
+    }
+    h2, h3 {
+      margin: 2px;
+    }
+    #app {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    section {
+      border: 1px solid black;
+      padding: 5px 15px;
+      margin: 5px;
+    }
+    div.result-boxes {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    div.result {
+      border: 1px solid black;
+      padding: 5px 15px;
+      margin: 5px;
+    }
+    table#preferences {
       border: 1px solid black;
     }
-    #ballot {
+    .option {
       padding: 5px;
       margin: 3px;
       border: 1px solid black;
@@ -23,74 +45,86 @@
 <body>
   <h1> Where To Go For Lunch</h1>
   <div id="app">
-    <section id="ballot">
-      <h2>My preferences ({{ voterName }})</h2>
-      <div v-if="ballot.length === 0">
-        <p>Empty</p>
-        <button @click="clearOptions">Clear example options</button>
-      </div>
-      <table>
-        <tr v-for="(id, index) in ballot">
-          <td> {{ index + 1 }}. </td>
-          <td :title="id" class="option">{{ options[id].title }}</td>
-          <td :id="id" :key="id">
-            <button v-on:click="moveUpInBallot">Up</button>
-            <button v-on:click="moveDownInBallot">Down</button>
-            <button v-on:click="removeFromBallot">Remove</button>
-          </td>
-        </tr>
-      </table>
-      <p v-if="ballot.length == 0">No vote yet. Pick from existing options or add a new one: </p>
-      <p v-else>You have {{ ballot.length }} preferences in your vote. You can still add more if you want.</p>
-      <input id="new-option-text" type="text" v-model="current" v-on:keydown.enter="addNewOption">
-      <button v-on:click="addNewOption" :disabled="current.length === 0">Add</button>
+    <section id="main">
+      <section id="ballot">
+        <h2>My preferences ({{ voterName }})</h2>
+        <div v-if="ballot.length === 0">
+          <p>Empty</p>
+          <button @click="clearOptions">Clear example options</button>
+        </div>
+        <table v-else id="preferences">
+          <tr v-for="(id, index) in ballot">
+            <td> {{ index + 1 }}. </td>
+            <td :title="id" class="option">{{ options[id].title }}</td>
+            <td :id="id" :key="id">
+              <button v-on:click="moveUpInBallot">Up</button>
+              <button v-on:click="moveDownInBallot">Down</button>
+              <button v-on:click="removeFromBallot">Remove</button>
+            </td>
+          </tr>
+        </table>
+        <p v-if="ballot.length == 0">No vote yet. Pick from existing options or add a new one: </p>
+        <p v-else>You have {{ ballot.length }} preferences in your vote. You can still add more if you want.</p>
+        <input id="new-option-text" type="text" v-model="current" v-on:keydown.enter="addNewOption">
+        <button v-on:click="addNewOption" :disabled="current.length === 0">Add</button>
+        <div>
+          <button @click="castBallot">Cast ballot</button>
+        </div>
+      </section>
+
+      <section id="options">
+        <h2> Options </h2>
+        <table>
+          <tr v-for="id in available">
+            <td class="option" v-on:click="addToBallot" title="Add" :id="id" :key="id">{{ options[id].title }}</td>
+          </tr>
+        </table>
+        <div>
+          Your name:<input id="voter-name-text" type="text" v-model="voterName" v-on:keydown.enter="setVoterName">
+        </div>
+      </section>
     </section>
 
-    <section id="options">
-      <h2> Options </h2>
-      <table>
-        <tr v-for="id in available">
-          <td class="option" v-on:click="addToBallot" title="Add" :id="id" :key="id">{{ options[id].title }}</td>
-        </tr>
-      </table>
-      <div>
-        Your name:<input id="voter-name-text" type="text" v-model="voterName" v-on:keydown.enter="setVoterName">
-      </div>
-      <p>
-        <button @click="castBallot">Cast ballot</button>
-      </p>
+    <section id="sidebar">
+      <section id="results" v-if="results.length > 0">
+        <h2> Results </h2>
+        <div class="result-boxes">
+          <div class="result" v-for="result in results">
+            <h3> {{ result.method }} </h3>
+            <div><strong>Winner(s):</strong></div>
+            <div v-for="(winner, index) in result.winners"> {{ options[winner].title }} </div>
+            <div><strong>Points:</strong></div>
+            <table>
+              <tr v-for="(value, key) in result.counts">
+                <td> {{ options[key].title }} </td>
+                <td> {{ value }} </td>
+            </tr>
+          </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="cast-ballots" v-show="votes.length > 0">
+        <h2>Cast ballots</h2>
+        <table>
+          <tr v-for="(vote, index) in votes">
+            <td> {{ vote.voter }} </td>
+            <td v-for="choice in vote.ballot"> {{ options[choice].title.slice(0,2) }} </td>
+          </tr>
+        </table>
+      </section>
+
     </section>
-
-    <p>
-      <h2>Cast ballots</h2>
-      <ul>
-        <li v-for="(vote, index) in votes">
-          <div>{{ vote.voter }}: {{ vote.ballot }}</div>
-        </li>
-      </ul>
-    </p>
-
-    <template v-if="results.length > 0">
-    <h2> Results </h2>
-    <p>
-      <table>
-        <tr> <th> Method </th> <th>Winner(s)</th> <th> Votes </th></tr>
-        <tr v-for="result in results">
-          <td> {{ result.method }} </td>
-          <td> {{ result.winners }} </td>
-          <td> {{ result.counts }} </td>
-        </tr>
-      </table>
-    </p>
-    </template>
-    <button @click="debugging=!debugging">Toggle debugging</button>
-    <template v-if="debugging">
-      <div> Available: {{ available }} </div>
-      <div> Ballot: {{ ballot }} </div>
-      <div> Options: {{ options }} </div>
-      <div> Ballots: {{ ballots }} </div>
-      <div> Winners: {{ winners }} 
-    </template>
+    <section id="debugging">
+      <button @click="debugging=!debugging">Toggle debugging</button>
+      <template v-if="debugging">
+        <div> Available: {{ available }} </div>
+        <div> Ballot: {{ ballot }} </div>
+        <div> Options: {{ options }} </div>
+        <div> Ballots: {{ ballots }} </div>
+        <div> Winners: {{ winners }} 
+      </template>
+    </section>
   </div>
 
   <script>
@@ -99,7 +133,7 @@
       data: {
         voterName: '',
         voterCount: 0,
-        debugging: true,
+        debugging: false,
         current: '',  // Current text in add option text edit box
         ballots: [],  // All cast ballots
         ballot: [],  // Options added to ballot in preference order
