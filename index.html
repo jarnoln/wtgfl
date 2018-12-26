@@ -21,36 +21,46 @@
   </style>
 </head>
 <body>
+  <h1> Where To Go For Lunch</h1>
   <div id="app">
-    <div id="ballot">
-      <h2>My ballot ({{ voterName }})</h2>
-      <p v-if="ballot.length === 0">Empty</p>
-      <ol>
-        <li v-for="id in ballot">
-          <div :id="id" class="option">{{ id }}: {{ options[id].title }}
+    <section id="ballot">
+      <h2>My preferences ({{ voterName }})</h2>
+      <div v-if="ballot.length === 0">
+        <p>Empty</p>
+        <button @click="clearOptions">Clear example options</button>
+      </div>
+      <table>
+        <tr v-for="(id, index) in ballot">
+          <td> {{ index + 1 }}. </td>
+          <td :title="id" class="option">{{ options[id].title }}</td>
+          <td :id="id" :key="id">
             <button v-on:click="moveUpInBallot">Up</button>
             <button v-on:click="moveDownInBallot">Down</button>
             <button v-on:click="removeFromBallot">Remove</button>
-          </div>
-        </li>
-      </ol>
-    </div>
-    <p v-if="ballot.length == 0">No vote yet. Pick from existing options or add a new one: </p>
-    <p v-else>You have {{ ballot.length }} preferences in your vote. You can still add more if you want.</p>
-    <input id="new-option-text" type="text" v-model="current" v-on:keydown.enter="addNewOption">
-    <button v-on:click="addNewOption" :disabled="current.length === 0">Add</button>
-    <h2> Options </h2>
-    <ul>
-      <li v-for="id in available">
-        <div class="option" v-on:click="addToBallot" title="Add" :id="id">{{ id }}: {{ options[id].title }}</div>
-      </li>
-    </ul>
-    <div>
+          </td>
+        </tr>
+      </table>
+      <p v-if="ballot.length == 0">No vote yet. Pick from existing options or add a new one: </p>
+      <p v-else>You have {{ ballot.length }} preferences in your vote. You can still add more if you want.</p>
+      <input id="new-option-text" type="text" v-model="current" v-on:keydown.enter="addNewOption">
+      <button v-on:click="addNewOption" :disabled="current.length === 0">Add</button>
+    </section>
+
+    <section id="options">
+      <h2> Options </h2>
+      <table>
+        <tr v-for="id in available">
+          <td class="option" v-on:click="addToBallot" title="Add" :id="id" :key="id">{{ options[id].title }}</td>
+        </tr>
+      </table>
+      <div>
         Your name:<input id="voter-name-text" type="text" v-model="voterName" v-on:keydown.enter="setVoterName">
-    </div>
-    <p>
-      <button @click="castBallot">Cast ballot</button>
-    </p>
+      </div>
+      <p>
+        <button @click="castBallot">Cast ballot</button>
+      </p>
+    </section>
+
     <p>
       <h2>Cast ballots</h2>
       <ul>
@@ -73,11 +83,14 @@
       </table>
     </p>
     </template>
-    <div> Available: {{ available }} </div>
-    <div> Ballot: {{ ballot }} </div>
-    <div> Options: {{ options }} </div>
-    <div> Ballots: {{ ballots }} </div>
-    <div> Winners: {{ winners }} </div>
+    <button @click="debugging=!debugging">Toggle debugging</button>
+    <template v-if="debugging">
+      <div> Available: {{ available }} </div>
+      <div> Ballot: {{ ballot }} </div>
+      <div> Options: {{ options }} </div>
+      <div> Ballots: {{ ballots }} </div>
+      <div> Winners: {{ winners }} 
+    </template>
   </div>
 
   <script>
@@ -86,6 +99,7 @@
       data: {
         voterName: '',
         voterCount: 0,
+        debugging: true,
         current: '',  // Current text in add option text edit box
         ballots: [],  // All cast ballots
         ballot: [],  // Options added to ballot in preference order
@@ -94,9 +108,10 @@
         results: [],  // List of results from all election methods
         available: [],  // Options not yet added to ballot
         options: {  // All currently known options
-          'red': { title: 'Red'},
-          'green': { title: 'Green'},
-          'blue': { title: 'Blue'}
+          'taco_house': { title: 'Taco House'},
+          'pizza_palace': { title: 'Pizza Palace'},
+          'hamburger_hut': { title: 'Hamburger Hut'},
+          'sushi_king': { title: 'Sushi King'},
         }
       },
       created: function() {
@@ -116,6 +131,13 @@
         },
         initializeAvailables() {
           this.available = Object.keys(this.options)
+        },
+        clearOptions() {
+          this.available = []
+          this.ballots = []
+          this.ballot = []
+          this.votes = []
+          this.options = {}
         },
         nextVoter() {
           this.voterCount += 1
@@ -148,6 +170,7 @@
         },
         removeFromBallot: function(event) {
           let id = event.target.parentElement.id
+          console.log('Remove from ballot: ' + id)
           let index = this.ballot.indexOf(id)
           this.ballot.splice(index, 1)
           this.available.push(id)
