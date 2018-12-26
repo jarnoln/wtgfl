@@ -31,7 +31,7 @@ function calculateSchulzeWinners(candidates, ballots) {
   console.log('calculateSchulzeWinners: ' + candidates)
   let losses = {}
   let wins = {}
-  let d = []
+  let d = {}
   let candidateCount = candidates.length;
   // Initialize wins and losses
   for (let i=0; i<candidateCount; i+=1) {
@@ -40,13 +40,13 @@ function calculateSchulzeWinners(candidates, ballots) {
   }
 
   for (let i=0; i<candidateCount; i+=1) {
-    let d_row = []
+    let candidateA = candidates[i];
+    let d_row = {}
     for (let j=0; j<candidateCount; j+=1) {
-      let candidateA = candidates[i];
       let candidateB = candidates[j];
       if (i !== j) {
         let votes = pairwiseDefeat(candidateA, candidateB, ballots);
-        d_row[j] = votes['A'];
+        d_row[candidateB] = votes['A'];  // Number of voters preferring A over B
         // These are not required by Schulze but allow taking a shortcut if we have Condorcet winner
         if (votes['A'] > votes['B']) {  // A is preferred by more voters than B
           wins[candidateA] += 1
@@ -56,7 +56,7 @@ function calculateSchulzeWinners(candidates, ballots) {
         }
       }
     }
-    d[i] = d_row;
+    d[candidateA] = d_row;
   }
 
   let winners = []
@@ -90,6 +90,59 @@ function calculateSchulzeWinners(candidates, ballots) {
       return result
     }
   }
-  // No clear Condorcet winner. Need to resort to path calculation.
-  return result
+
+  console.log('No clear Condorcet winner. Need to resort to path calculation.');
+  result.winners = []
+  let p = []
+  for (let i=0; i<candidateCount; i+=1) {
+    let a = candidates[i];
+    let p_row = []
+    for (let j=0; j<candidateCount; j+=1) {
+      let b = candidates[j];
+      if (i != j) {
+        if (d[a][b] > d[b][a]) {
+          p_row[j] = d[a][b];
+        } else {
+          p_row[j] = 0;
+        }
+      }
+    }
+    p[i] = p_row;
+  }
+
+  for (let i=0; i<candidateCount; i+=1) {
+    for (let j=0; j<candidateCount; j+=1) {
+      if (i != j) {
+        for (let k=0; k<candidateCount; k+=1) {
+          if ((i != k) && (j != k)) {
+            p[j][k] = Math.max(p[j][k], Math.min(p[j][i], p[i][k]));
+          }
+        }
+      }
+    }
+  }
+
+  schulze_winners = {}
+  for (let i=0; i<candidateCount; i+=1) {
+    schulze_winners[candidates[i]] = true;
+  }
+
+  for (let i=0; i<candidateCount; i+=1) {
+    for (let j=0; j<candidateCount; j+=1) {
+      if (i != j) {
+        if (p[j][i] > p[i][j]) {
+          schulze_winners[candidates[i]] = false;
+          console.log(candidates[i] + ' is not a Schulze winner');
+        }
+      }
+    }
+  }
+
+  for (let i=0; i<candidateCount; i+=1) {
+    if (schulze_winners[candidates[i]]) {
+      console.log(candidates[i] + ' is a Schulze winner');
+      result.winners.push(candidates[i]);
+    }
+  }
+  return result;
 }
