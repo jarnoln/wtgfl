@@ -22,8 +22,10 @@ possible to use this to solve also any other issue where a group of people
 need to make some common decision).
 
 Everyone gets to list their preferences and this will magically(*) pick the
-one that is most fair for everyone. (* Actually it is using one of several
-supported election methods. The method can be changed from settings.)
+one that is most fair for everyone.
+
+(*) _Actually it is using one of several supported election methods. The method
+can be changed from settings._
 
 ## Here is how it works:
 
@@ -33,3 +35,10 @@ supported election methods. The method can be changed from settings.)
 * Then others will make their own lists and cast their votes
 * After everyone has casted their vote, they are counted and winner is
   declared (or winners in case of tie and there is no tie-breaker)
+
+## Supported election methods
+
+* [Plurality](https://en.wikipedia.org/wiki/Plurality_voting)
+* [Approval](https://en.wikipedia.org/wiki/Approval_voting)
+* [Schulze](https://en.wikipedia.org/wiki/Schulze_method)
+
