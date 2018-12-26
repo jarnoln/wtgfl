@@ -15,7 +15,7 @@ function calculateApprovalWinners(ballots) {
       } else {
         counts[key] = 1
       }
-      console.log(key, ': ' + counts[key])
+      // console.log(key, ': ' + counts[key])
     }
   }
 
@@ -26,14 +26,14 @@ function calculateApprovalWinners(ballots) {
     if (counts[key] > maxVotes) {
       winners = [key]
       maxVotes = counts[key]
-      console.log(key + ' is the current winner')
+      // console.log(key + ' is the current winner')
     } else if (counts[key] == maxVotes) {
       winners.push(key)
-      console.log(key + ' added to winners')
+      // console.log(key + ' added to winners')
     }
   })
 
-  console.log('Winners: ' + winners)
+  // console.log('Winners: ' + winners)
   let result = {
     method: 'approval',
     winners: winners,

@@ -7,6 +7,7 @@
   <script src="https://unpkg.com/vue"></script>
   <script src="plurality.js"></script>
   <script src="approval.js"></script>
+  <script src="schulze.js"></script>
   <style>
     body {
       font-family: 'Open Sans', sans-serif;
@@ -241,7 +242,8 @@
           this.ballot = []
           let pluralityResult = calculatePluralityWinners(this.ballots)
           let approvalResult = calculateApprovalWinners(this.ballots)
-          this.results = [pluralityResult, approvalResult]
+          let schulzeResult = calculateSchulzeWinners(Object.keys(this.options), this.ballots)
+          this.results = [pluralityResult, approvalResult, schulzeResult]
           this.winners = pluralityResult.winners
           this.initializeAvailables()
           this.nextVoter()

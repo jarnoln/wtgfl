@@ -22,18 +22,18 @@ function calculatePluralityWinners(ballots) {
   // Find option with most votes
   let maxVotes = 0
   Object.keys(counts).forEach(function(key) {
-    console.log('Votes for ' + key + ': ' + counts[key])
+    // console.log('Votes for ' + key + ': ' + counts[key])
     if (counts[key] > maxVotes) {
       winners = [key]
       maxVotes = counts[key]
-      console.log(key + ' is the current winner')
+      // console.log(key + ' is the current winner')
     } else if (counts[key] == maxVotes) {
       winners.push(key)
-      console.log(key + ' added to winners')
+      // console.log(key + ' added to winners')
     }
   })
 
-  console.log('Winners: ' + winners)
+  // console.log('Winners: ' + winners)
   let result = {
     method: 'plurality',
     winners: winners,
