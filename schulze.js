@@ -16,7 +16,7 @@ function pairwiseDefeat(candidateA, candidateB, ballots) {
       }
     }
   }
-  // console.log(candidateA + ' vs. ' + candidateB + ': ' + votesA + ' - ' + votesB);
+  console.log(candidateA + ' vs. ' + candidateB + ': ' + votesA + ' - ' + votesB);
   return {
     'A': votesA,
     'B': votesB

@@ -1,7 +1,7 @@
 Todo:
 - Apply some styling
+- Add unit tests
 - Set up backend to allow participating over network
-- Calculate winner(s) by condorcet method
 - Settings:
   - Can choose voting method
   - Allow more than one vote from one browser
@@ -17,9 +17,12 @@ Advanced:
 - User guide video
 
 Done:
+- Colored choices
+- Calculate winner(s) by Condorcet method
+  - Schulze method implemented
 - Add choices to ballot by choosing them from existing options
 - Add choices to ballot by typing them
-    - New options also added to existing option list
+  - New options also added to existing option list
 - Remove choices from ballot (and return them to available options)
 - Reorder choices in ballot
 - Cast ballots locally (adding them to a local list of ballots)

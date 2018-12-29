@@ -1,4 +1,4 @@
-# Where to go for lunch
+# Where To Go For Lunch
 
 > “The History of every major Galactic Civilization tends to pass through three
 > distinct and recognizable phases, those of Survival, Inquiry and
@@ -41,4 +41,3 @@ can be changed from settings._
 * [Plurality](https://en.wikipedia.org/wiki/Plurality_voting)
 * [Approval](https://en.wikipedia.org/wiki/Approval_voting)
 * [Schulze](https://en.wikipedia.org/wiki/Schulze_method)
-

@@ -56,7 +56,11 @@
         <table v-else id="preferences">
           <tr v-for="(id, index) in ballot">
             <td> {{ index + 1 }}. </td>
-            <td :title="id" class="option">{{ options[id].title }}</td>
+            <td :title="id"
+                class="option"
+                :style="'background-color: '  + options[id].color"
+                >{{ options[id].title }}
+            </td>
             <td :id="id" :key="id">
               <button v-on:click="moveUpInBallot">Up</button>
               <button v-on:click="moveDownInBallot">Down</button>
@@ -77,7 +81,14 @@
         <h2> Options </h2>
         <table>
           <tr v-for="id in available">
-            <td class="option" v-on:click="addToBallot" title="Add" :id="id" :key="id">{{ options[id].title }}</td>
+            <td class="option"
+                :id="id"
+                :key="id"
+                :style="'background-color: '  + options[id].color"
+                v-on:click="addToBallot"
+                title="Add">
+                  {{ options[id].title }}
+            </td>
           </tr>
         </table>
         <div>
@@ -110,7 +121,10 @@
         <table>
           <tr v-for="(vote, index) in votes">
             <td> {{ vote.voter }} </td>
-            <td v-for="choice in vote.ballot"> {{ options[choice].title.slice(0,2) }} </td>
+            <td v-for="choice in vote.ballot"
+                :style="'background-color: '  + options[choice].color">
+                {{ options[choice].title.slice(0,2) }}
+            </td>
           </tr>
         </table>
       </section>
@@ -129,6 +143,7 @@
   </div>
 
   <script>
+
     var app = new Vue({
       el: '#app',
       data: {
@@ -142,14 +157,30 @@
         winners: [],  // Current election winners (can be more than one in case of tie)
         results: [],  // List of results from all election methods
         available: [],  // Options not yet added to ballot
-        options: {  // All currently known options
-          'taco_house': { title: 'Taco House'},
-          'pizza_palace': { title: 'Pizza Palace'},
-          'hamburger_hut': { title: 'Hamburger Hut'},
-          'sushi_king': { title: 'Sushi King'},
-        }
+        options: {},  // All currently known options
+        methods: {
+          'plurality': {
+            'title': 'Plurality',
+            'calculate': calculatePluralityWinners
+          }
+        },
+        colors: [
+          '#77f',
+          '#7f7',
+          '#7ff',
+          '#f77',
+          '#f7f',
+          '#ff7',
+          '#aaf',
+          '#afa',
+          '#aff',
+          '#faa',
+          '#faf',
+          '#ffa'
+        ]
       },
       created: function() {
+        this.createDefaultOptions()
         this.initializeAvailables()
         this.nextVoter()
       },
@@ -178,20 +209,37 @@
           this.voterCount += 1
           this.voterName = 'voter' + this.voterCount
         },
-        addNewOption: function(event) {
-          let title = this.current
-          console.log('addOption:' + title)
+        createOption: function(title) {
+          // console.log('addOption:' + title)
+          let colorIndex = Object.values(this.options).length % this.colors.length
+          // console.log()
           if (this.optionExists(title)) {
             console.log("Option with this title already exists: " + title)
-            return;
+            return '';
           }
           let option = {
-            title: title
+            title: title,
+            color: this.colors[colorIndex]
           }
           let newKey = this.titleToKey(title)
-          console.log('Add option ' + newKey + ': ' + title)
+          console.log('Create option', newKey, ':', title,
+                       ' colorIndex:', colorIndex,
+                       ' color:', this.colors[colorIndex])
           Vue.set(this.options, newKey, option)
-          this.ballot.push(newKey)
+          return newKey
+        },
+        createDefaultOptions: function() {
+          let options = ['Taco House', 'Pizza Palace', 'Hamburger Hut', 'Sushi King']
+          for (let i=0; i<options.length;i++) {
+            this.createOption(options[i])
+          }
+        },
+        addNewOption: function(event) {
+          let title = this.current
+          let newKey = this.createOption(title)
+          if (newKey) {
+            this.ballot.push(newKey)
+          }
         },
         addToBallot: function(event) {
           let id = event.target.id
@@ -243,6 +291,12 @@
           let pluralityResult = calculatePluralityWinners(this.ballots)
           let approvalResult = calculateApprovalWinners(this.ballots)
           let schulzeResult = calculateSchulzeWinners(Object.keys(this.options), this.ballots)
+          // this.results = []
+          /* Object.keys(this.methods).forEach(function(key) {
+            let method = this.methods[key]
+            let result = method.calculate(this.ballots)
+            this.results.push(result)
+          }) */
           this.results = [pluralityResult, approvalResult, schulzeResult]
           this.winners = pluralityResult.winners
           this.initializeAvailables()
